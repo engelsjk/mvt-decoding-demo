@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>mvt decoding demo</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = '<<MAPBOX_ACCESS_TOKEN>>';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v9',
+            center: [-74.5, 40],
+            zoom: 2,
+            hash: true
+        });
+
+        map.on('load', function () {
+            map.addSource('mvt', {
+                'type': 'vector',
+                'tiles': [
+                    'http://localhost:8080/data/{z}/{x}/{y}'
+                ]
+            });
+            map.addLayer({
+                'id': 'tile-line',
+                'type': 'line',
+                'source': 'mvt',
+                'source-layer': 'tile',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-opacity': 1,
+                    'line-color': ' #5F6A6F',
+                    'line-width': 3
+                }
+            });
+
+            map.addLayer({
+                'id': 'tile-fill',
+                'type': 'fill',
+                'source': 'mvt',
+                'source-layer': 'tile',
+                'paint': {
+                    'fill-opacity': 0.6,
+                    'fill-color': '#9FB1B9',
+                }
+            });
+
+
+            map.addLayer({
+                'id': 'text',
+                'source': 'mvt',
+                'source-layer': 'text',
+                'type': 'symbol',
+                'layout': {
+                    'text-field': ['format', ['get', 'text'], { 'font-scale': 1 }],
+                    'text-offset': [0, -1],
+                },
+                'paint': {
+                    'text-color': '#000',
+                    'text-color-transition': {
+                        duration: 0
+                    },
+                    'text-halo-color': '#fff',
+                    'text-halo-width': 0.5
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>
